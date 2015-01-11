@@ -1,0 +1,65 @@
+Installing instructions
+
+1. Run make all to generate binaries from source files
+2. Set ORION_HOME in ~/.bashrc
+
+
+Orion exploits fine grained parallelism to perform sequence alignment. Given a query set and a database, Orion works by partitioning the database and fragmenting the individual queries and returns high scoring alignments in sorted order.
+
+Orion uses the following steps to complete sequence alignment
+
+Shard(partition) the database into specified partitions
+Fragment the query with optimal overlap and fragment size
+Perform parallel BLAST search on each query fragment and database shard pair
+Merge suitable alignments from different fragments to get aggregated alignments
+Sort alignments in decreasing order of scores
+
+Orion has the following dependencies
+1. Since Orion uses mpiBLAST's mpiformatdb to partition the database, you will need to install mpiBLAST.
+2. mpiBLAST requires MPI. Install MPI (if not already installed). Two popular free versions of MPI are MPICH2 and Open MPI
+   Configure mpiBLAST by editing the ~/.ncbirc file as given on http://www.mpiblast.org/ instructions
+
+3. Orion uses Hadoop to implement fine grained parallelization. So Orion needs Hadoop installed and configured.
+   Set HADOOP_HOME in ~/.bashrc
+
+
+To use Orion for sequence alignment run the following scripts:
+
+1. Run mpiformatdb with appropriate path name of database and specified partitions.
+2. Fragment the query with required overlap and fragment size
+Specify 
+QUERY_PATH: Pathname of the query file
+FORMATTED_QUERY_NAME:New name of query
+FRAGMENT_LENGTH
+DATABASE_LENGTH
+QUERY_FRAGMENTS_PATH  in this order 
+
+Run Orionfragment.sh with above parameters
+Note the OFFSET and THRESHOLD since it needs to be input in step 5
+
+3. Create input for Orion's mapreduce job. 
+Specify
+MAP_INPUTDIR_NAME
+DB_SHARDS
+QUERY_FRAG_NUMBER
+DATABASE_DIR_LOC
+DB_NAME
+QUERY_PART_DIR
+Run Orionprepareinput.sh with above parameters
+
+#4. Copy the MAP_INPUT_DIR_NAME prepared by Orionprepareinput.sh onto HDFS
+#fs -copyFromLocal  MAP_INPUT_DIR_NAME 
+
+5.Run Orionblast.sh
+Specify
+SEARCH_REDUCE_TASKS
+OFFSET
+QUERY_FRAG_LENGTH
+QUERY_ACTUAL_LENGTH
+THRESHOLD
+MAP_INPUTDIR
+OUTPUT_DIR
+SORT REDUCE TASKS
+
+Result appears on HDFS as  OUTPUT_DIR_sorted. Copy it from HDFS to analyze the results.-
+fs -copyFromLocal  OUTPUT_DIR_sorted $HOME/
