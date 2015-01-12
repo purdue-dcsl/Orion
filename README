@@ -1,3 +1,6 @@
+Implementation to accompany our Supercomputing 2014 paper:
+Kanak Mahadik, Somali Chaterji, Bowen Zhou, Milind Kulkarni, and Saurabh Bagchi, “Orion: Scaling Genomic Sequence Matching with Fine-Grained Parallelization,” At the International Conference for High Performance Computing, Networking, Storage, and Analysis (Supercomputing), pp. 1-11, Nov 16-21, 2014, New Orleans, LA. 
+
 Installing instructions
 
 1. Run make all to generate binaries from source files
